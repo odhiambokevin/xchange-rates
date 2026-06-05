@@ -1,0 +1,35 @@
+[
+  { 
+    "id":1,
+    "firm": "firm1", 
+    "url": "https://firm1/fx-rates",
+    "parser_type": "parser_type_1",
+    "render_js": true,
+    "selectors": {
+      "container_class": "container-name",
+        "row_class": "row-name"
+    }
+  }, 
+  { 
+    "id":2,
+    "firm": "firm2", 
+    "url": "https://firm2/fx-rates
+    "render_js": true,
+    "parser_type": "parser_type_2",
+    "selectors": {
+        "container_class": "container-name",
+        "row_class": "row-name"
+        }
+  },
+  { 
+    "id":3,
+    "firm": "firm3", 
+    "url": "https://firm3/fx-rates/api", #this has an api endpoint
+    "parser_type": "apiparser",
+    "selectors": {
+        "container_class": "container-name",
+        "row_class": "row-name"
+        }
+  }
+]
+
