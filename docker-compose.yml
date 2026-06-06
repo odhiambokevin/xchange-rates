@@ -1,0 +1,47 @@
+networks:
+  xrates-net:
+    driver: bridge
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0  #supports KRaft
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # node is both broker and controller
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      #broker listens on 9092 -for data. controller mechanism listens on 9093 -the brain of the cluster
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      #voters in the cluster, only 1 here
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      #cluster ID
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      JMX_PORT: 9999
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - xrates-net
+       
+  kafka-producer:
+    build:
+        context: ./kafka-producer
+    image: kafka-producer
+    container_name: kafka-producer
+    init: true
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_SERVER: "kafka:9092"
+    networks:
+      - xrates-net

@@ -13,7 +13,7 @@
   { 
     "id":2,
     "firm": "firm2", 
-    "url": "https://firm2/fx-rates
+    "url": "https://firm2/fx-rates"
     "render_js": true,
     "parser_type": "parser_type_2",
     "selectors": {

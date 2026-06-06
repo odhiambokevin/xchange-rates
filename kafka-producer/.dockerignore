@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Python caching and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker / Build artifacts
+Dockerfile
+.dockerignore
+.docker
+
+# Local IDEs and OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+*.deb
+*.log
