@@ -20,7 +20,7 @@ services:
       #voters in the cluster, only 1 here
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       #cluster ID
-      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      CLUSTER_ID: '${CLUSTER_ID}'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       JMX_PORT: 9999
     healthcheck:
