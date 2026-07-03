@@ -13,4 +13,5 @@ venv/
 pip-log.txt
 
 kafka-producer/firms.json
+flink-processor/flink.txt
 
