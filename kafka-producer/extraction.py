@@ -55,10 +55,8 @@ def parse_custom_divs(source, selectors):
         
     rows = container.find_all(class_=selectors.get("row_class"))
     for row in rows:
-        # NOTE: You will need to adjust the exact text/tag extractions 
-        # below based on the actual inner structure of firm1's divs.
+        #adjust the exact text/tag extractions below based on the actual inner structure of firm1's divs.
         text_elements = [el.text.strip() for el in row.find_all(string=True) if el.strip()]
-        print(f"Found elements for row: {text_elements}")
         if len(text_elements) >= 3:
             results.append({
                 "currency": standardize_currency(text_elements[0]),
@@ -78,17 +76,17 @@ def parse_dynamic_ticker(source, selectors):
     items = container.find_all(selectors.get("row_element"))
     
     for item in items:
-        # 1. Extract the raw text from the 'li' (e.g., "USD/KES: Buying: 127.2 , Selling: 132.65")
+        #extract raw text from the 'li' eg "USD/KES: Buying: 127.2 , Selling: 132.65"
         raw_text = item.get_text(separator=" ").strip()
         
         try:
-            #extract the currency - everything before the colon)
+            #extract the currency ie everything before the colon
             currency_pair = raw_text.split(":")[0].strip() #results in USD/KES
             #normalize to just the base currency if needed e.g."USD/KES" to "USD"
             currency = currency_pair.split("/")[0] 
             
-            # 3. Use regular expressions to extract the numeric rates safely
-            # Looks for numeric patterns following "Buying" and "Selling"
+            #regular expressions to extract the numeric rates safely
+            #looks for numeric patterns following "Buying" and "Selling"
             buy_match = re.search(r'Buying:\s*([\d\.]+)', raw_text, re.IGNORECASE)
             sell_match = re.search(r'Selling:\s*([\d\.]+)', raw_text, re.IGNORECASE)
             
@@ -107,7 +105,7 @@ def parse_dynamic_ticker(source, selectors):
 def parse_api_endpoint(url, selectors):
     results = []
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=15)
         data = response.json()
         
         #incase root key changes dynamically, we iterate through keys or adjust to look for the payload
@@ -232,7 +230,7 @@ def produce_to_kafka():
 
     #process, clean, and send data
     for row in scraped_data:
-        # Manual Data Cleaning (Moved from your original CSV block)
+        #clean data manually
         clean_buy = re.sub(r'[^\d\.]', '', str(row.get('buy', '')))
         clean_sell = re.sub(r'[^\d\.]', '', str(row.get('sell', '')))
         try:

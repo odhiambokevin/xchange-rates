@@ -37,4 +37,4 @@ ENV PYTHONUSERBASE=/root/.local
 COPY wait-for-it.sh firms.json extraction.py ./
 RUN chmod +x wait-for-it.sh
 
-CMD ["sh", "-c", "./wait-for-it.sh -s -t 30 $KAFKA_SERVER -- python -u extraction.py"]
+CMD ["sh", "-c", "./wait-for-it.sh -s -t 60 $KAFKA_SERVER -- python -u extraction.py"]

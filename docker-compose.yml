@@ -37,7 +37,7 @@ services:
         context: ./kafka-producer
     image: kafka-producer
     container_name: kafka-producer
-    init: true
+    init: true #clean any orphan processes in container
     depends_on:
       kafka:
         condition: service_healthy
@@ -45,3 +45,79 @@ services:
       KAFKA_SERVER: "kafka:9092"
     networks:
       - xrates-net
+    
+  flink-jobmanager:
+    build:
+      context: ./flink-processor
+    image: flink-processor
+    container_name: flink-jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+        FLINK_PROPERTIES: |
+          jobmanager.rpc.address: flink-jobmanager
+    networks:
+      - xrates-net
+
+  flink-taskmanager:
+    build:
+      context: ./flink-processor
+    image: flink-processor
+    container_name: flink-taskmanager
+    command: taskmanager
+    depends_on:
+      - flink-jobmanager
+    environment:
+        FLINK_PROPERTIES: |
+          jobmanager.rpc.address: flink-jobmanager
+    networks:
+      - xrates-net
+
+  flink-processor:
+    build:
+        context: ./flink-processor
+    image: flink-processor
+    container_name: flink-processor
+    init: true
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-producer:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      KAFKA_SERVER: "kafka:9092"
+      POSTGRES_HOST: postgresdb
+      POSTGRES_PORT: "5432"
+      PYTHONUNBUFFERED: 1
+    networks:
+      - xrates-net
+
+  postgresdb:
+    build:
+      context: ./database
+    image: postgresimage
+    container_name: postgres-db
+    restart: always
+    env_file:
+      - .env
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=fx_rates
+        #set linux os environment variable inside the container
+        - TZ=Africa/Nairobi
+        #set the postgreSQL client timezone environment variable
+        - PGTZ=Africa/Nairobi
+    logging:
+        options:
+            max-size: 10m
+            max-file: "3"
+    ports:
+    - 5433:5432
+    networks:
+      - xrates-net
+    #force postgres engine to start with Africa/Nairobi timezone settings
+    command: postgres -c timezone=Africa/Nairobi
